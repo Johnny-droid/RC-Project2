@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     printf("IP %s\n", ip_address);
     fflush(stdout);
     
-    //  ----------------- OPEN CONNECTION  ----------------- 
+    //  ----------------- OPEN CONNECTION COMMANDS  ----------------- 
     if ((sockfd = openConnection(SERVER_PORT_COMMAND, ip_address)) < 0) {
         perror("Socket 21, used for commands, could not open properly\n");
         return -1;
@@ -60,10 +60,8 @@ int main(int argc, char **argv) {
     }
 
 
-    // ----------------- USER COMMAND ----------------- 
-    strncpy(command, CMD_USER, CMD_MAX_SIZE); 
-    strncat(command, args.user, BUFF_SIZE-CMD_MAX_SIZE-3);
-    strcat(command, "\r\n");
+    // ------------------- USER COMMAND ------------------- 
+    buildCommand(command, CMD_USER, args.user);
     
     if ((bytes = writeCommand(sockfd, command)) < 0) {
         printf("Couldn't write the user");
@@ -73,29 +71,44 @@ int main(int argc, char **argv) {
     // Read the response from the server and check if it now asks for a password
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_ASK_PASSWORD) {
-        printf("The connection was unsuccessful \nCould not login \nCode returned was: %d\n", responseCode);
+        printf("The connection was unsuccessful \nWrong user \nCode returned was: %d\n", responseCode);
         return -1;
     }
 
 
 
     //  -----------------  PASSWORD COMMAND  ----------------- 
-    strncpy(command, CMD_PASSWORD, CMD_MAX_SIZE); 
-    strncat(command, args.password, BUFF_SIZE-CMD_MAX_SIZE-3);
-    strcat(command, "\r\n");
+    buildCommand(command, CMD_PASSWORD, args.password);
     
-    printf("Command: %s", command);
     if ((bytes = writeCommand(sockfd, command)) < 0) {
-        printf("Couldn't write the user");
+        printf("Couldn't write the password");
         return -1;
     }
 
     // Read the response from the server and check if login was successful
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_LOGIN_SUCCESS) {
-        printf("The connection was unsuccessful \nCould not login \nCode returned was: %d\n", responseCode);
+        printf("The connection was unsuccessful \nWrong password \nCode returned was: %d\n", responseCode);
         return -1;
     }
+
+
+    //  -----------------  PASSIVE COMMAND  ----------------- 
+    buildCommand(command, CMD_PASSIVE, "");
+
+    if ((bytes = writeCommand(sockfd, command)) < 0) {
+        printf("Couldn't write the passive command");
+        return -1;
+    }
+
+    // Read the response from the server and check if login was successful
+    responseCode = readResponse(sockfd, response);
+    if (responseCode != SOCKET_PASSIVE_SUCCESS) {
+        printf("The connection was unsuccessful \nSomething wrong with passive mode \nCode returned was: %d\n", responseCode);
+        return -1;
+    }
+
+    int newPort = parsePassiveResponse(response);
 
 
 

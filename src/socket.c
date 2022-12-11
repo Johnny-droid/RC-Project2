@@ -123,3 +123,50 @@ int writeCommand(int sockfd, char* command) {
 
     return bytes;
 }
+
+
+void buildCommand(char* command, char* arg1, char* arg2) {
+
+    strncpy(command, arg1, CMD_MAX_SIZE); 
+    strncat(command, arg2, BUFF_SIZE-CMD_MAX_SIZE-3);
+    strcat(command, "\r\n");
+
+}
+
+
+int parsePassiveResponse(char* response) {
+    char n1[10]; //n1 is last 
+    char n2[10]; // n2 is second last
+    int comma_pos1 = 0, comma_pos2 = 0;
+
+
+    for (int i = strlen(response)-1; i > 0; i--) {
+        
+        if (response[i] != ',') continue;
+
+        // found the last comma
+        if (comma_pos1 == 0) {
+            comma_pos1 = i;
+        
+        // found the second last comma
+        } else {
+            comma_pos2 = i;
+            break;
+        }
+    }
+
+    /*
+    printf("Response length: %d\n", strlen(response));
+    printf("Comma1 position: %d\n", comma_pos1);
+    printf("Comma2 position: %d\n", comma_pos2);
+    */
+
+    strncpy(n1, response+comma_pos1+1, strlen(response)-comma_pos1-5); n1[strlen(response)-comma_pos1-5] = '\0';
+    strncpy(n2, response+comma_pos2+1, comma_pos1-comma_pos2-1); n2[comma_pos1-comma_pos2-1] = '\0';
+
+    printf("N1: %s\n", n1);
+    printf("N2: %s\n", n2);
+
+    return atoi(n2)*256 + atoi(n1);
+}
+
