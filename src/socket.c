@@ -134,6 +134,25 @@ void buildCommand(char* command, char* arg1, char* arg2) {
 }
 
 
+void readDataFile(int sockfd, char* file_name) {
+    
+    char new_file_name[BUFF_SIZE] = "bin/";
+    strncat(new_file_name, file_name, BUFF_SIZE-5);
+
+    FILE* file = fopen(new_file_name, "w");
+
+    char buf[BUFF_SIZE];
+    size_t bytes = 0;
+    
+    while ((bytes = read(sockfd, buf, BUFF_SIZE)) > 0 ) {
+        fwrite(buf, bytes, sizeof(char), file);
+    }
+
+    fclose(file);
+}
+
+
+
 int parsePassiveResponse(char* response) {
     char n1[10]; //n1 is last 
     char n2[10]; // n2 is second last

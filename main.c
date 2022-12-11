@@ -9,6 +9,7 @@ struct Args
     char password[BUFF_SIZE];
     char host[BUFF_SIZE]; 
     char path[BUFF_SIZE];
+    char name[BUFF_SIZE];
 };
 
 
@@ -20,10 +21,22 @@ int main(int argc, char **argv) {
 
     // Instead of this, we need to make a parser
     struct Args args = {
-        .user = "anonymous",
-        .password = "password",
+        .user = "rcom",
+        .password = "rcom",
+        /*
         .host = "ftp.up.pt",
-        .path = "pub/kodi/timestamp.txt"
+        .path = "pub/kodi/timestamp.txt",
+        .name = "timestamp.txt"
+        */
+        /*
+        .host = "netlab1.fe.up.pt",
+        .path = "pipe.txt",
+        .name = "pipe.txt"
+        */
+        .host = "netlab1.fe.up.pt",
+        .path = "files/pic1.jpg",
+        .name = "pic1.jpg"
+
     };
 
     struct hostent* h;
@@ -133,27 +146,18 @@ int main(int argc, char **argv) {
         return -1;
     }
     
-    
 
-    /*
-    char buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";
-    //send a string to the server
-    bytes = write(sockfd, buf, strlen(buf));
-    if (bytes > 0) {
-        printf("Bytes escritos %ld\n", bytes);
-        read(sockfd, buf, 40);
 
-    } else {
-        perror("write()");
-        exit(-1);
+    //  --------------- DOWNLOAD FILE  ----------------- 
+    readDataFile(sockfd_data, args.name);
+
+    // Check if it was successful
+    responseCode = readResponse(sockfd, response);
+    if (responseCode != SOCKET_TRANSFER_COMPLETE) {
+        printf("The transfer was unsuccessful \nCode returned was: %d\n", responseCode);
+        return -1;
     }
 
-    if (close(sockfd)<0) {
-        perror("close()");
-        exit(-1);
-    }
-
-    */
     return 0;
 }
 
