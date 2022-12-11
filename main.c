@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     char ip_address[BUFF_SIZE];
     char response[BUFF_SIZE], command[BUFF_SIZE];
     //FILE * socket;
-    int sockfd;
+    int sockfd, sockfd_data;
     int responseCode;
     int bytes;
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     };
     
 
-    // Read the response from the server and check if it was successful
+    // Check if it was successful
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_SUCCESS) {
         printf("The connection was unsuccessful\n Code returned was: %d\n", responseCode);
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
         return -1;
     }
     
-    // Read the response from the server and check if it now asks for a password
+    // Check if it was successful
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_ASK_PASSWORD) {
         printf("The connection was unsuccessful \nWrong user \nCode returned was: %d\n", responseCode);
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    // Read the response from the server and check if login was successful
+    // Check if it was successful
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_LOGIN_SUCCESS) {
         printf("The connection was unsuccessful \nWrong password \nCode returned was: %d\n", responseCode);
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    // Read the response from the server and check if login was successful
+    // Check if it was successful
     responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_PASSIVE_SUCCESS) {
         printf("The connection was unsuccessful \nSomething wrong with passive mode \nCode returned was: %d\n", responseCode);
@@ -110,7 +110,30 @@ int main(int argc, char **argv) {
 
     int newPort = parsePassiveResponse(response);
 
+    
+    //  ----------------- OPEN CONNECTION DATA  ----------------- 
+    if ((sockfd_data = openConnection(newPort, ip_address)) < 0) {
+        perror("Socket used for data transmission could not open properly\n");
+        return -1;
+    };
 
+
+    //  --------------- RETRIEVE FILE COMMAND  ----------------- 
+    buildCommand(command, CMD_RETRIEVE, args.path);
+    
+    if ((bytes = writeCommand(sockfd, command)) < 0) {
+        printf("Couldn't write the user");
+        return -1;
+    }
+
+    // Check if it was successful
+    responseCode = readResponse(sockfd, response);
+    if (responseCode != SOCKET_OPEN_DATA_SUCCESS) {
+        printf("The connection was unsuccessful \nSomething wrong with opening file \nCode returned was: %d\n", responseCode);
+        return -1;
+    }
+    
+    
 
     /*
     char buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";

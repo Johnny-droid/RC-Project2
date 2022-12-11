@@ -15,4 +15,6 @@ int readResponse(int sockfd, char* response);
 int writeCommand(int sockfd, char* command);
 void buildCommand(char* command, char* arg1, char* arg2);
 
-int parsePassiveResponse(char* response) 
+int parsePassiveResponse(char* response);
+
+
