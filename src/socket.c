@@ -1,15 +1,14 @@
 #include "../include/socket.h"
 
-int openConnection(int port) {
+int openConnection(int port, char* ip_address) {
     int sockfd;
     struct sockaddr_in server_addr;
-    size_t bytes;
 
     /*server address handling*/
     bzero((char *) &server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDR);    /*32 bit Internet address network byte ordered*/
-    server_addr.sin_port = htons(SERVER_PORT);        /*server TCP port must be network byte ordered */
+    server_addr.sin_addr.s_addr = inet_addr(ip_address);    /*32 bit Internet address network byte ordered*/
+    server_addr.sin_port = htons(port);        /*server TCP port must be network byte ordered */
 
     /*open a TCP socket*/
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -17,14 +16,110 @@ int openConnection(int port) {
         return -1;
     }
     printf("Opened socket\n");
+
     /*connect to the server*/
-    if (connect(sockfd,
-                (struct sockaddr *) &server_addr,
-                sizeof(server_addr)) < 0) {
+    if (connect(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
         perror("connect()");
         return -1;
     }
     printf("Connected to Server\n");
 
-    return 0;
+    return sockfd;
+}
+
+
+
+// Reads the response to the buf and returns the code found
+int readResponse(int sockfd, char* response) {
+	
+    //memset()
+    int state = 0, responseCode = -1;
+    size_t bytes = 0, total_bytes = 0;
+    
+    printf("Starting to read response\n");
+    fflush(stdout);
+
+    
+    char buf[2];
+    
+    while ((bytes = read(sockfd, buf, 1)) > 0 ) {
+        response[total_bytes] = buf[0];
+        total_bytes += 1;
+
+        switch (state) {
+            case 0:
+                if (isdigit(buf[0])) state++;
+                break;
+            case 1:
+                if (isdigit(buf[0])) state++;
+                else state = 0;
+                break;
+            case 2:
+                if (isdigit(buf[0])) state++;
+                else state = 0;
+                break;
+            case 3:
+                if (buf[0] == ' ') state++;
+                else state = 0;
+                break;
+            case 4:
+                if (buf[0] == '\n') state++;
+                break;
+            default:
+                state = 0;
+                break;
+        }
+        
+        if (total_bytes > BUFF_SIZE-1 || bytes == 0 || state == 5) break;
+    }
+    
+
+    response[total_bytes] = '\0';
+    printf("Response: %s\n", response);
+    sscanf(response, "%d", &responseCode);
+    printf("Response Code: %d\n", responseCode);
+    
+
+    
+    /*
+    char* buf;
+
+	//FILE * socket_file = fdopen(sockfd, "r");
+
+	while (getline(&buf, &bytes, socket_file) > 0) {
+		strncat(response, buf, bytes - 1);
+
+		if (bytes > 3 && buf[3] == ' ') {
+			sscanf(buf, "%d", &responseCode);
+			break;
+		}
+    }
+    printf("Response: %s\n", response);
+    printf("Response Code: %d\n", responseCode);
+    */
+
+    
+   
+
+    return responseCode;
+}
+
+// Write any command to the socket
+int writeCommand(int sockfd, char* command) {
+
+    int bytes = 0;
+
+    printf("Write command: %s\n", command);
+    
+    //FILE* socket_file = fdopen(sockfd, "w");
+    //bytes = (int) fwrite(command, sizeof(char), strlen(command), socket_file);
+    
+    bytes = write(sockfd, command, strlen(command));
+
+    printf("%d bytes writen\n", bytes);
+
+    printf("After write\n");
+    fflush(stdout);
+
+    return bytes;
 }
