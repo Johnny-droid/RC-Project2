@@ -19,7 +19,10 @@ int main(int argc, char **argv) {
         printf("use: download ftp://[<user>:<password>@]<host>/<url-path>\n");
     }
 
-    // Instead of this, we need to make a parser
+    // TODO: Instead of this, we need to make a parser
+    // All the parser needs to do is take the URL in argv[1], 
+    // and separate the information into the args struct
+
     struct Args args = {
         .user = "rcom",
         .password = "rcom",
