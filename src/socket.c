@@ -15,14 +15,14 @@ int openConnection(int port, char* ip_address) {
         perror("socket()");
         return -1;
     }
-    printf("Opened socket\n");
+    printf("\nOpened socket\n");
 
     /*connect to the server*/
     if (connect(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
         perror("connect()");
         return -1;
     }
-    printf("Connected to Server\n");
+    printf("Connected to Server\n\n");
 
     return sockfd;
 }
@@ -36,8 +36,8 @@ int readResponse(int sockfd, char* response) {
     int state = 0, responseCode = -1;
     size_t bytes = 0, total_bytes = 0;
     
-    printf("Starting to read response\n");
-    fflush(stdout);
+    //printf("Starting to read response\n");
+    //fflush(stdout);
 
     
     char buf[2];
@@ -77,7 +77,7 @@ int readResponse(int sockfd, char* response) {
     response[total_bytes] = '\0';
     printf("Response: %s\n", response);
     sscanf(response, "%d", &responseCode);
-    printf("Response Code: %d\n", responseCode);
+    //printf("Response Code: %d\n", responseCode);
     
 
     
@@ -109,17 +109,16 @@ int writeCommand(int sockfd, char* command) {
 
     int bytes = 0;
 
-    printf("Write command: %s\n", command);
+    //printf("Write command: %s\n", command);
     
     //FILE* socket_file = fdopen(sockfd, "w");
     //bytes = (int) fwrite(command, sizeof(char), strlen(command), socket_file);
     
     bytes = write(sockfd, command, strlen(command));
 
-    printf("%d bytes writen\n", bytes);
-
-    printf("After write\n");
-    fflush(stdout);
+    //printf("%d bytes writen\n", bytes);
+    //printf("After write\n");
+    //fflush(stdout);
 
     return bytes;
 }
@@ -144,11 +143,15 @@ void readDataFile(int sockfd, char* file_name) {
     char buf[BUFF_SIZE];
     size_t bytes = 0;
     
+    printf("\nDownloading...\n");
+    fflush(stdout);
+
     while ((bytes = read(sockfd, buf, BUFF_SIZE)) > 0 ) {
         fwrite(buf, bytes, sizeof(char), file);
     }
 
     fclose(file);
+
 }
 
 
@@ -183,8 +186,8 @@ int parsePassiveResponse(char* response) {
     strncpy(n1, response+comma_pos1+1, strlen(response)-comma_pos1-5); n1[strlen(response)-comma_pos1-5] = '\0';
     strncpy(n2, response+comma_pos2+1, comma_pos1-comma_pos2-1); n2[comma_pos1-comma_pos2-1] = '\0';
 
-    printf("N1: %s\n", n1);
-    printf("N2: %s\n", n2);
+    //printf("N1: %s\n", n1);
+    //printf("N2: %s\n", n2);
 
     return atoi(n2)*256 + atoi(n1);
 }

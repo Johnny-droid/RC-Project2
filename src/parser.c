@@ -14,24 +14,46 @@ char *strrev(char *str){
       return str;
 }
 
+ //           if(sscanf(arg,"ftp://%99[^:/ @]/%99[^: @\n]", args->host, args->path)!=)
+
 // --------------- ARGUMENT PARSER -----------------
 int argParser(struct Args *args, char *arg){
         
-    printf("parsing arguments\n");
+      printf("parsing arguments\n");
 
-    sscanf(arg,"ftp://[%99[^:/ @]:%99[^:/ @]@]%99[^:/ @]/%99[^: @\n]", args->user, args->password, args->host, args->path);
-    char rev[BUFF_SIZE];
-    strcpy(rev, args->path);
-    strcpy(rev, strrev(rev));
-    sscanf(rev,"%99[^:/ @]/",rev);
-    strcpy(rev, strrev(rev));
-    strcpy(args->name, rev);
-    printf("user = \"%s\"\n", args->user);
-    printf("password = \"%s\"\n", args->password);
-    printf("host = \"%s\"\n", args->host);
-    printf("path = \"%s\"\n", args->path);
-    printf("name = \"%s\"\n", args->name);
+      if(sscanf(arg,"ftp://%99[^:/ @]:%99[^:/ @]@%99[^:/ @]/%99[^: @\n]", args->user, args->password, args->host, args->path)==4){
 
+            char rev[BUFF_SIZE];
+            strcpy(rev, args->path);
+            strcpy(rev, strrev(rev));
+            sscanf(rev,"%99[^:/ @]/",rev);
+            strcpy(rev, strrev(rev));
+            strcpy(args->name, rev);
+            printf("user = \"%s\"\n", args->user);
+            printf("password = \"%s\"\n", args->password);
+            printf("host = \"%s\"\n", args->host);
+            printf("path = \"%s\"\n", args->path);
+            printf("name = \"%s\"\n", args->name);
+
+      }else if(sscanf(arg,"ftp://%99[^:/ @]/%99[^: @\n]", args->host, args->path)==2){
+
+            char rev[BUFF_SIZE];
+            strcpy(rev, args->path);
+            strcpy(rev, strrev(rev));
+            sscanf(rev,"%99[^:/ @]/",rev);
+            strcpy(rev, strrev(rev));
+            strcpy(args->name, rev);
+            strcpy(args->user, DEFAULT_USER);
+            strcpy(args->password, DEFAULT_PASS);
+            printf("host = \"%s\"\n", args->host);
+            printf("path = \"%s\"\n", args->path);
+            printf("name = \"%s\"\n", args->name);
+            
+
+      }else{
+            printf("Incorrect input format\n");
+            return -1;
+      }
 
     return 0;
 }
