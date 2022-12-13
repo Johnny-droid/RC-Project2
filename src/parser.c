@@ -22,14 +22,14 @@ int argParser(struct Args *args, char *arg){
       // ------ check if input is valid
       regex_t regex;
       int comp_status;
-      comp_status = regcomp(&regex,"123",0);
+      comp_status = regcomp(&regex,"^(ftp:/)?/?(([^:/ @]+):([^:/ @]+)@)?([^:/ @]+)/([^: @]+)$",0);
       if(comp_status!=0){
             printf("regular expression compilation error\n");
             return -1;
       }
       
       int argument_valid;
-      argument_valid = regexec(&regex, "123", 0, NULL, 0);
+      argument_valid = regexec(&regex, arg, 0, NULL, 0);
       if(argument_valid!=0){
             printf("Incorrect input format\n");
             return -1;
