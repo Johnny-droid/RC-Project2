@@ -2,16 +2,10 @@
 #include <regex.h>
 #include "include/macros.h"
 #include "include/socket.h"
+#include "include/parser.h"
 
 
-struct Args
-{
-    char user[BUFF_SIZE];
-    char password[BUFF_SIZE];
-    char host[BUFF_SIZE]; 
-    char path[BUFF_SIZE];
-    char name[BUFF_SIZE];
-};
+
 
 
 int main(int argc, char **argv) {
@@ -147,26 +141,6 @@ int main(int argc, char **argv) {
 
     return 0;
 
-
-
-    // --------------- ARGUMENT PARSER -----------------
-    int argParser(struct Args *args, char *arg){
-        
-        printf("parsing arguments\n");
-
-        sscanf(&arg,"ftp://[%99[^:/ @]:%99[^:/ @]@]%99[^:/ @]/%99[^:/ @\n]", args.user, args.password, args.host, args.path);
-        char rev[99] = args.path;
-        rev = strrev(rev);
-        sscanf(rev,"%99[^:/ @]/",rev);
-        rev = strrev(rev);
-        args.name = rev;
-        printf("user = \"%s\"\n", args.user);
-        printf("password = \"%s\"\n", args.password);
-        printf("host = \"%s\"\n", args.host);
-        printf("path = \"%s\"\n", args.path);
-        printf("name = \"%s\"\n", args.name);
-
-    }
 }
 
 
