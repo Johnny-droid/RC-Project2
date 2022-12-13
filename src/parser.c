@@ -43,9 +43,12 @@ int argParser(struct Args *args, char *arg){
             sscanf(rev,"%99[^:/ @]/",rev);
             strcpy(rev, strrev(rev));
             strcpy(args->name, rev);
+            strcpy(args->user, DEFAULT_USER);
+            strcpy(args->password, DEFAULT_PASS);
             printf("host = \"%s\"\n", args->host);
             printf("path = \"%s\"\n", args->path);
             printf("name = \"%s\"\n", args->name);
+            
 
       }else{
             printf("Incorrect input format\n");

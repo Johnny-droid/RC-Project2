@@ -20,4 +20,7 @@
 #define CMD_PASSIVE "pasv "
 #define CMD_RETRIEVE "retr "
 
+#define DEFAULT_USER "anonymous"
+#define DEFAULT_PASS "password"
+
 #endif
