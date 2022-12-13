@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <regex.h>
 #include "include/macros.h"
 #include "include/socket.h"
 
@@ -22,25 +23,8 @@ int main(int argc, char **argv) {
     // TODO: Instead of this, we need to make a parser
     // All the parser needs to do is take the URL in argv[1], 
     // and separate the information into the args struct
-
-    struct Args args = {
-        .user = "rcom",
-        .password = "rcom",
-        /*
-        .host = "ftp.up.pt",
-        .path = "pub/kodi/timestamp.txt",
-        .name = "timestamp.txt"
-        */
-        /*
-        .host = "netlab1.fe.up.pt",
-        .path = "pipe.txt",
-        .name = "pipe.txt"
-        */
-        .host = "netlab1.fe.up.pt",
-        .path = "files/pic1.jpg",
-        .name = "pic1.jpg"
-
-    };
+    struct Args args;
+    argParser(&args, argv[1]); 
 
     struct hostent* h;
     char ip_address[BUFF_SIZE];
@@ -162,6 +146,27 @@ int main(int argc, char **argv) {
     }
 
     return 0;
+
+
+
+    // --------------- ARGUMENT PARSER -----------------
+    int argParser(struct Args *args, char *arg){
+        
+        printf("parsing arguments\n");
+
+        sscanf(&arg,"ftp://[%99[^:/ @]:%99[^:/ @]@]%99[^:/ @]/%99[^:/ @\n]", args.user, args.password, args.host, args.path);
+        char rev[99] = args.path;
+        rev = strrev(rev);
+        sscanf(rev,"%99[^:/ @]/",rev);
+        rev = strrev(rev);
+        args.name = rev;
+        printf("user = \"%s\"\n", args.user);
+        printf("password = \"%s\"\n", args.password);
+        printf("host = \"%s\"\n", args.host);
+        printf("path = \"%s\"\n", args.path);
+        printf("name = \"%s\"\n", args.name);
+
+    }
 }
 
 
