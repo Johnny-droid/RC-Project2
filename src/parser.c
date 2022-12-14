@@ -45,6 +45,8 @@ int argParser(struct Args *args, char *arg){
             strcpy(args->name, rev);
             strcpy(args->user, DEFAULT_USER);
             strcpy(args->password, DEFAULT_PASS);
+            printf("user = \"%s\"\n", args->user);
+            printf("password = \"%s\"\n", args->password);
             printf("host = \"%s\"\n", args->host);
             printf("path = \"%s\"\n", args->path);
             printf("name = \"%s\"\n", args->name);

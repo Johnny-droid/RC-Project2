@@ -64,23 +64,20 @@ int main(int argc, char **argv) {
     
     // Check if it was successful
     responseCode = readResponse(sockfd, response);
-    if (responseCode != SOCKET_ASK_PASSWORD) {
-        printf("The connection was unsuccessful \nWrong user \nCode returned was: %d\n", responseCode);
-        return -1;
+    if (responseCode == SOCKET_ASK_PASSWORD) {
+        printf("Writing Password\n");
+        //  -----------------  PASSWORD COMMAND  ----------------- 
+        buildCommand(command, CMD_PASSWORD, args.password);
+        
+        if ((bytes = writeCommand(sockfd, command)) < 0) {
+            printf("Couldn't write the password");
+            return -1;
+        }
+        // Check if it was successful
+        responseCode = readResponse(sockfd, response);
     }
 
-
-
-    //  -----------------  PASSWORD COMMAND  ----------------- 
-    buildCommand(command, CMD_PASSWORD, args.password);
     
-    if ((bytes = writeCommand(sockfd, command)) < 0) {
-        printf("Couldn't write the password");
-        return -1;
-    }
-
-    // Check if it was successful
-    responseCode = readResponse(sockfd, response);
     if (responseCode != SOCKET_LOGIN_SUCCESS) {
         printf("The connection was unsuccessful \nWrong password \nCode returned was: %d\n", responseCode);
         return -1;

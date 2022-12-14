@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#define BUFF_SIZE 500
+#define BUFF_SIZE 10000
 #define CMD_MAX_SIZE 10
 
 #define SERVER_PORT_COMMAND 21
