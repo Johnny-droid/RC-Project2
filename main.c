@@ -136,7 +136,12 @@ int main(int argc, char **argv) {
         printf("The transfer was unsuccessful \nCode returned was: %d\n", responseCode);
         return -1;
     }
-
+    
+    if (close(sockfd)<0 || close(sockfd_data)<0) {
+        perror("Problem closing sockets");
+        return -1;
+    }
+    
     return 0;
 
 }
